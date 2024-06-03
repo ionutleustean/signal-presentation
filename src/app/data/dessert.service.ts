@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, lastValueFrom, map } from 'rxjs';
+import {Observable, lastValueFrom, map, delay} from 'rxjs';
 import { Dessert } from './dessert';
 import { DessertFilter } from './dessert-filter';
 
@@ -12,7 +12,7 @@ export class DessertService {
 
   find(filter: DessertFilter): Observable<Dessert[]> {
     return this.#http
-      .get<Dessert[]>(dataFile)
+      .get<Dessert[]>(`${dataFile}?version=${Math.random().toString()} ` )
       .pipe(
         map((result) =>
           result.filter(
