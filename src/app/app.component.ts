@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { DessertsComponent } from './desserts/desserts.component';
 import { ToastComponent } from './shared/toast';
@@ -9,6 +9,7 @@ import { ToastComponent } from './shared/toast';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
   imports: [RouterOutlet, DessertsComponent, ToastComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
   title = 'dessert';
