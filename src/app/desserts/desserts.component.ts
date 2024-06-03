@@ -7,6 +7,8 @@ import { DessertService } from '../data/dessert.service';
 import { DessertIdToRatingMap, RatingService } from '../data/rating.service';
 import { DessertCardComponent } from '../dessert-card/dessert-card.component';
 import { ToastService } from '../shared/toast';
+import {toObservable, toSignal} from "@angular/core/rxjs-interop";
+import {catchError, of, switchAll, switchMap, tap} from "rxjs";
 
 @Component({
   selector: 'app-desserts',
@@ -15,7 +17,7 @@ import { ToastService } from '../shared/toast';
   templateUrl: './desserts.component.html',
   styleUrl: './desserts.component.css',
 })
-export class DessertsComponent implements OnInit {
+export class DessertsComponent {
   #dessertService = inject(DessertService);
   #ratingService = inject(RatingService);
   #toastService = inject(ToastService);
@@ -30,9 +32,25 @@ export class DessertsComponent implements OnInit {
     }
   });
 
+  filters$ = toObservable(this.filters);
+
+  deserts$ = this.filters$.pipe(
+      tap(() => this.loading.set(true)),
+      switchMap((filters) => {
+        return this.#dessertService.find(filters).pipe(
+           catchError((error) => {
+             this.#toastService.show('Error loading desserts!');
+             console.error(error);
+             return of([]);
+           }),
+            tap(() => this.loading.set(false))
+          )
+      })
+    );
+
   loading = signal(false);
 
-  desserts: WritableSignal<Dessert[]> = signal([]);
+  desserts = toSignal(this.deserts$, {initialValue: []});
 
   ratings = signal<DessertIdToRatingMap>({});
 
@@ -43,44 +61,6 @@ export class DessertsComponent implements OnInit {
     effect(() => {
       console.log('originalName', this.originalName());
       console.log('englishName', this.englishName());
-    });
-
-    effect( () => {
-      this.#toastService.show(this.ratedDeserts().length + ' desserts loaded!');
-    })
-
-
-    this.originalName.set('Apple');
-    this.englishName.set('Pie');
-
-
-    this.originalName.set('Apple2');
-    this.englishName.set('Pie3');
-
-    setTimeout(() => {
-      this.originalName.set('Kaiser');
-      this.englishName.set('Mess');
-    }, 1000);
-
-
-  }
-  ngOnInit(): void {
-    this.search();
-  }
-
-  search(): void {
-    this.loading.set(true);
-
-    this.#dessertService.find(this.filters()).subscribe({
-      next: (desserts) => {
-        this.desserts.set(desserts);
-        this.loading.set(false);
-      },
-      error: (error) => {
-        this.loading.set(false);
-        this.#toastService.show('Error loading desserts!');
-        console.error(error);
-      },
     });
   }
 
