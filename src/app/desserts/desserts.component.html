@@ -1,12 +1,12 @@
-<form>
+<form (appUpdate)="updateFilters($event)">
   <div class="card-grid">
     <div>
       <label for="name">Original Name</label>
-      <input id="name" [ngModel]="originalName()" (ngModelChange)="originalName.set($event)"  name="originalName" />
+      <input id="name" [ngModel]="originalName()"   name="originalName" />
     </div>
     <div>
       <label for="englishName">English Name</label>
-      <input id="englishName" [ngModel]="englishName()" (ngModelChange)="englishName.set($event)" name="englishName" />
+      <input id="englishName" [ngModel]="englishName()"  name="englishName" />
     </div>
   </div>
   <div class="mt-10 mb-10">
