@@ -8,6 +8,7 @@ export class RatingService {
   loadExpertRatings(): Observable<DessertIdToRatingMap> {
     return of({
       10: 500,
+      5: 100
     });
   }
   loadExpertRatingsPromise(): Promise<DessertIdToRatingMap> {

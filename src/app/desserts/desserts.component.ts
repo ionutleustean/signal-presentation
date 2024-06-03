@@ -1,5 +1,5 @@
 import { JsonPipe } from '@angular/common';
-import {Component, OnInit, inject, signal, WritableSignal} from '@angular/core';
+import {Component, OnInit, inject, signal, WritableSignal, computed} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Dessert } from '../data/dessert';
 import { DessertFilter } from '../data/dessert-filter';
@@ -22,23 +22,30 @@ export class DessertsComponent implements OnInit {
 
   originalName = signal('');
   englishName = signal('');
+
+  filters = computed(() => {
+    return {
+      originalName: this.originalName(),
+      englishName: this.englishName(),
+    }
+  });
+
   loading = signal(false);
 
   desserts: WritableSignal<Dessert[]> = signal([]);
+
+  ratings = signal<DessertIdToRatingMap>({});
+
+  ratedDeserts = computed(() => this.toRated(this.desserts(), this.ratings()));
 
   ngOnInit(): void {
     this.search();
   }
 
   search(): void {
-    const filter: DessertFilter = {
-      originalName: this.originalName(),
-      englishName: this.englishName(),
-    };
-
     this.loading.set(true);
 
-    this.#dessertService.find(filter).subscribe({
+    this.#dessertService.find(this.filters()).subscribe({
       next: (desserts) => {
         this.desserts.set(desserts);
         this.loading.set(false);
@@ -62,8 +69,7 @@ export class DessertsComponent implements OnInit {
 
     this.#ratingService.loadExpertRatings().subscribe({
       next: (ratings) => {
-        const rated = this.toRated(this.desserts(), ratings);
-        this.desserts.set(rated);
+        this.ratings.set(ratings);
         this.loading.set(false);
       },
       error: (error) => {
