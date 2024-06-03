@@ -49,9 +49,20 @@ export class DessertsComponent implements OnInit {
       this.#toastService.show(this.ratedDeserts().length + ' desserts loaded!');
     })
 
-    effect(() => {
-      this.englishName.set(this.originalName());
-    }, { allowSignalWrites: true });
+
+    this.originalName.set('Apple');
+    this.englishName.set('Pie');
+
+
+    this.originalName.set('Apple2');
+    this.englishName.set('Pie3');
+
+    setTimeout(() => {
+      this.originalName.set('Kaiser');
+      this.englishName.set('Mess');
+    }, 1000);
+
+
   }
   ngOnInit(): void {
     this.search();
