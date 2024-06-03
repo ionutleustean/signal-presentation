@@ -1,5 +1,5 @@
 import { JsonPipe } from '@angular/common';
-import {Component, OnInit, inject, signal, WritableSignal, computed} from '@angular/core';
+import {Component, OnInit, inject, signal, WritableSignal, computed, effect} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Dessert } from '../data/dessert';
 import { DessertFilter } from '../data/dessert-filter';
@@ -38,6 +38,17 @@ export class DessertsComponent implements OnInit {
 
   ratedDeserts = computed(() => this.toRated(this.desserts(), this.ratings()));
 
+
+  constructor() {
+    effect(() => {
+      console.log('originalName', this.originalName());
+      console.log('englishName', this.englishName());
+    });
+
+    effect( () => {
+      this.#toastService.show(this.ratedDeserts().length + ' desserts loaded!');
+    })
+  }
   ngOnInit(): void {
     this.search();
   }
