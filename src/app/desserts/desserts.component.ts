@@ -48,6 +48,10 @@ export class DessertsComponent implements OnInit {
     effect( () => {
       this.#toastService.show(this.ratedDeserts().length + ' desserts loaded!');
     })
+
+    effect(() => {
+      this.englishName.set(this.originalName());
+    }, { allowSignalWrites: true });
   }
   ngOnInit(): void {
     this.search();
